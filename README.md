@@ -22,43 +22,41 @@ pip install -r ./requirements_window.txt
 ### Seizure Detection
 
 #### Siena Scalp EEG Database
-
 - 📥 **Download:** [Siena Scalp EEG Database on PhysioNet](https://physionet.org/content/siena-scalp-eeg/1.0.0/)
 - 📂 **Save location:** `./time_step_level/data`
--   **Next step:** `cd ./time_step_level` and run `python3 get_dataset.py`
+- 🛠 **Next step:** `cd ./time_step_level` and run `python3 get_dataset.py`
 
 ---
 
 #### TUH EEG Seizure Corpus v2.0.3
-
 - 📥 **Download:** [TUSZ v2.0.3](https://isip.piconepress.com/projects/nedc/html/tuh_eeg/#c_tueg)
 - 📂 **Save location:** `./time_step_level/data`
--   **Next step:** `cd ./time_step_level` and run `python3 get_dataset.py`
+- 🛠 **Next step:** `cd ./time_step_level` and run `python3 get_dataset.py`
 
 ---
 
 #### SeizeIT1
-
 - 📥 **Download:** [SeizeIT1 Dataset - KU Leuven](https://rdr.kuleuven.be/dataset.xhtml?persistentId=doi:10.48804/P5Q0OJ)
 - 📂 **Save location:** `./time_step_level/data`
--   **Next step:** `cd ./time_step_level` and run `python3 get_dataset.py`
+- 🛠 **Next step:** `cd ./time_step_level` and run `python3 get_dataset.py`
 
 ---
 
 ### Sleep Stage Classification
 
-#### Sleep-EDFx
-- 📥 **Download:** `cd ./window_level/datasets` and run `python3 prepare_sleep.py`.
-- 📂 **Save location:** The python script will store dataset into `./window_level/datasets/sleep_edf_full`
+#### 🛌 Sleep-EDFx
+- 📥 **Download:** `cd ./window_level/datasets` and run `python3 prepare_sleep.py`
+- 📂 **Save location:** `./window_level/datasets/sleep_edf_full`
 
 ---
 
-### Pathological(abnormal) Detection
+### Pathological (Abnormal) Detection
 
 #### TUH Abnormal EEG Corpus v3.0.1
 - 📥 **Download:** [TUAB: v3.0.1](https://isip.piconepress.com/projects/nedc/html/tuh_eeg/#c_tueg)
 - 📂 **Save location:** `./window_level/datasets`
--   **Next step:** `cd ./window_level/abonrmal/dataset_maker` and run `python3 make_TUAB.py`
+- 🛠 **Next step:** `cd ./window_level/abonrmal/dataset_maker` and run `python3 make_TUAB.py`
+
 
 ## Experiments
 ### Seizure Detection
