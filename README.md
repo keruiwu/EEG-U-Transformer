@@ -21,6 +21,7 @@ Starting from this point, the remainder of the document is divided into three ma
 ## Seizure Detection Requirements
 
 To install requirements:
+Need python version more than 3.10
 
 ```bash
 pip install -r ./SeizureDetection/requirements.txt
@@ -85,6 +86,14 @@ pip install -r ./SleepStageClassification/requirements.txt
 
 
 # Pathological(abnormal) Detection
+
+## Pathological Detection Requirements
+
+To install requirements:
+
+```bash
+pip install -r ./PathologicalDetection/requirements.txt
+```
 
 ## Pathological(abnormal) Detection Datasets Download
 
