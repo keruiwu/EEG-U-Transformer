@@ -24,7 +24,7 @@ def get_val(window_size):
     val_data = []
     val_label = []
     print('=========ETHZ dev set=========')
-    file_list, label_list = get_file('../data/v2.0.3/edf/dev')
+    file_list, label_list = get_file('./data/v2.0.3/edf/dev')
     progress = tqdm(range(len(file_list)))
     for i in progress:
         data_file, label_file = file_list[i], label_list[i]
@@ -50,8 +50,8 @@ def get_val(window_size):
     val_data, val_label = shuffle(val_data, val_label)
     val_data = np.array(val_data)[:5000]
     val_label = np.array(val_label)[:5000]
-    np.save(f'../data/dataset/val_data_{window_size}.npy', val_data)
-    np.save(f'../data/dataset/val_label_{window_size}.npy', val_label)
+    np.save(f'./data/dataset/val_data_{window_size}.npy', val_data)
+    np.save(f'./data/dataset/val_label_{window_size}.npy', val_label)
 
 
 def get_siena(window_size, args):
@@ -63,7 +63,7 @@ def get_siena(window_size, args):
     valid_window_li = []
     valid_label_li = []
 
-    file_list, label_list = get_file('../data/BIDS_Siena')
+    file_list, label_list = get_file('./data/BIDS_Siena')
 
     progress = tqdm(file_list)
     for edf_path in progress:
@@ -125,12 +125,12 @@ def get_siena(window_size, args):
     no_window_li = no_window_li[:int(len(valid_window_li) * 3)]
     no_label_li = no_label_li[:int(len(valid_label_li) * 3)]
 
-    np.save(f'../data/dataset/siena_18_full_window_{window_size}.npy', np.array(full_window_li))
-    np.save(f'../data/dataset/siena_18_full_label_{window_size}.npy', np.array(full_label_li))
-    np.save(f'../data/dataset/siena_18_no_window_{window_size}.npy', np.array(no_window_li))
-    np.save(f'../data/dataset/siena_18_no_label_{window_size}.npy', np.array(no_label_li))
-    np.save(f'../data/dataset/siena_18_valid_window_{window_size}.npy', np.array(valid_window_li))
-    np.save(f'../data/dataset/siena_18_valid_label_{window_size}.npy', np.array(valid_label_li))
+    np.save(f'./data/dataset/siena_18_full_window_{window_size}.npy', np.array(full_window_li))
+    np.save(f'./data/dataset/siena_18_full_label_{window_size}.npy', np.array(full_label_li))
+    np.save(f'./data/dataset/siena_18_no_window_{window_size}.npy', np.array(no_window_li))
+    np.save(f'./data/dataset/siena_18_no_label_{window_size}.npy', np.array(no_label_li))
+    np.save(f'./data/dataset/siena_18_valid_window_{window_size}.npy', np.array(valid_window_li))
+    np.save(f'./data/dataset/siena_18_valid_label_{window_size}.npy', np.array(valid_label_li))
 
     return full_window_li, full_label_li, no_window_li, no_label_li, valid_window_li, valid_label_li
 
@@ -147,7 +147,7 @@ def get_mit(window_size, args):
     valid_window_li = []
     valid_label_li = []
 
-    file_list, label_list = get_file('../data/BIDS_CHB-MIT')
+    file_list, label_list = get_file('./data/BIDS_CHB-MIT')
 
     progress = tqdm(file_list)
     for edf_path in progress:
@@ -205,12 +205,12 @@ def get_mit(window_size, args):
 
     valid_window_li, valid_label_li = shuffle(valid_window_li, valid_label_li)
 
-    np.save(f'../data/dataset/mit_18_full_window_{window_size}.npy', np.array(full_window_li))
-    np.save(f'../data/dataset/mit_18_full_label_{window_size}.npy', np.array(full_label_li))
-    np.save(f'../data/dataset/mit_18_no_window_{window_size}.npy', np.array(no_window_li))
-    np.save(f'../data/dataset/mit_18_no_label_{window_size}.npy', np.array(no_label_li))
-    np.save(f'../data/dataset/mit_18_valid_window_{window_size}.npy', np.array(valid_window_li))
-    np.save(f'../data/dataset/mit_18_valid_label_{window_size}.npy', np.array(valid_label_li))
+    np.save(f'./data/dataset/mit_18_full_window_{window_size}.npy', np.array(full_window_li))
+    np.save(f'./data/dataset/mit_18_full_label_{window_size}.npy', np.array(full_label_li))
+    np.save(f'./data/dataset/mit_18_no_window_{window_size}.npy', np.array(no_window_li))
+    np.save(f'./data/dataset/mit_18_no_label_{window_size}.npy', np.array(no_label_li))
+    np.save(f'./data/dataset/mit_18_valid_window_{window_size}.npy', np.array(valid_window_li))
+    np.save(f'./data/dataset/mit_18_valid_label_{window_size}.npy', np.array(valid_label_li))
     
     return full_window_li, full_label_li, no_window_li, no_label_li, valid_window_li, valid_label_li
 
@@ -227,7 +227,7 @@ def get_ethz(window_size, args):
     valid_window_li = []
     valid_label_li = []
 
-    file_list, label_list = get_file('../data/v2.0.3/edf/train')
+    file_list, label_list = get_file('./data/v2.0.3/edf/train')
     progress = tqdm(range(len(file_list)))
     for i in progress:
         data_file, label_file = file_list[i], label_list[i]
@@ -273,12 +273,12 @@ def get_ethz(window_size, args):
 
     valid_window_li, valid_label_li = shuffle(valid_window_li, valid_label_li)
 
-    np.save(f'../data/dataset/ethz_18_full_window_{window_size}.npy', np.array(full_window_li))
-    np.save(f'../data/dataset/ethz_18_full_label_{window_size}.npy', np.array(full_label_li))
-    np.save(f'../data/dataset/ethz_18_no_window_{window_size}.npy', np.array(no_window_li))
-    np.save(f'../data/dataset/ethz_18_no_label_{window_size}.npy', np.array(no_label_li))
-    np.save(f'../data/dataset/ethz_18_valid_window_{window_size}.npy', np.array(valid_window_li))
-    np.save(f'../data/dataset/ethz_18_valid_label_{window_size}.npy', np.array(valid_label_li))
+    np.save(f'./data/dataset/ethz_18_full_window_{window_size}.npy', np.array(full_window_li))
+    np.save(f'./data/dataset/ethz_18_full_label_{window_size}.npy', np.array(full_label_li))
+    np.save(f'./data/dataset/ethz_18_no_window_{window_size}.npy', np.array(no_window_li))
+    np.save(f'./data/dataset/ethz_18_no_label_{window_size}.npy', np.array(no_label_li))
+    np.save(f'./data/dataset/ethz_18_valid_window_{window_size}.npy', np.array(valid_window_li))
+    np.save(f'./data/dataset/ethz_18_valid_label_{window_size}.npy', np.array(valid_label_li))
 
     return full_window_li, full_label_li, no_window_li, no_label_li, valid_window_li, valid_label_li
 
@@ -314,8 +314,8 @@ def get_train(
     print()
     print('valid_window:', len(valid_window_li))
     print('valid_label:', len(valid_label_li))
-    np.save(f'../data/dataset/full_train_data_{alpha}_{beta}_{window_size}.npy', valid_window_li)
-    np.save(f'../data/dataset/full_train_label_{alpha}_{beta}_{window_size}.npy', valid_label_li)
+    np.save(f'./data/dataset/full_train_data_{alpha}_{beta}_{window_size}.npy', valid_window_li)
+    np.save(f'./data/dataset/full_train_label_{alpha}_{beta}_{window_size}.npy', valid_label_li)
 
 
 if __name__ == '__main__':
@@ -365,8 +365,8 @@ if __name__ == '__main__':
     print()
     print('valid_window:', len(valid_window_li))
     print('valid_label:', len(valid_label_li))
-    np.save(f'../data/dataset/full_train_data_{alpha}_{beta}_{window_size}.npy', valid_window_li)
-    np.save(f'../data/dataset/full_train_label_{alpha}_{beta}_{window_size}.npy', valid_label_li)
+    np.save(f'./data/dataset/full_train_data_{alpha}_{beta}_{window_size}.npy', valid_window_li)
+    np.save(f'./data/dataset/full_train_label_{alpha}_{beta}_{window_size}.npy', valid_label_li)
 
     # get_train(
     #     full_window_li,

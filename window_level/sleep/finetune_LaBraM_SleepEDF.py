@@ -22,7 +22,13 @@ def seed_torch(seed=1029):
 	torch.backends.cudnn.deterministic = True
 seed_torch(7)
 
-from Modules.models.dn3_ext import ConvEncoderBENDR
+from utils import temporal_interpolation
+import Modules.LaBraM.modeling_finetune
+
+import timm.models
+from timm.models import create_model
+import torch
+from utils import temporal_interpolation
 from utils_eval import get_metrics
 
 class LitEEGPTCausal(pl.LightningModule):
@@ -30,36 +36,41 @@ class LitEEGPTCausal(pl.LightningModule):
     def __init__(self):
         super().__init__()    
         self.num_class = 5
-        encoder = ConvEncoderBENDR(20, encoder_h=512, dropout=0., projection_head=False)
-        # encoder.load("Modules/models/encoder.pt")
-        
-        self.model = encoder
-        self.scale_param    = torch.nn.Parameter(torch.tensor(1.))
-        
-        self.downsample     = torch.nn.Conv1d(2, 19, 3, stride=3)
-        
-        self.linear_probe   = torch.nn.Linear(5632, 5)
-        
-        self.drop           = torch.nn.Dropout(p=0.10)
-        
+        # init model
+        checkpoint = torch.load("Modules/LaBraM/labram-base.pth")
+        new_checkpoint = {}
+        for k,v in checkpoint['model'].items():
+            if k.startswith('student.'):
+                new_checkpoint[k[len('student.'):]] = v
+        model = create_model("labram_base_patch200_200", 
+                                # checkpoint_path= ,
+                                qkv_bias=False,
+                                rel_pos_bias=True,
+                                num_classes=5,
+                                drop_rate=0.0,
+                                drop_path_rate=0.1,
+                                attn_drop_rate=0.0,
+                                drop_block_rate=None,
+                                use_mean_pooling=True,
+                                init_scale=0.001,
+                                use_rel_pos_bias=True,
+                                use_abs_pos_emb=True,
+                                init_values=0.1,)
+        model.load_state_dict(new_checkpoint, strict=False)
+        self.feature        = model
         self.loss_fn        = torch.nn.CrossEntropyLoss()
     
         self.running_scores = {"train":[], "valid":[], "test":[]}
         self.is_sanity = True
-        
     
     def forward(self, x):
-        x = self.downsample(x)
+        B, C, T = x.shape
+        x = temporal_interpolation(x, 200*15)
+        x = x.reshape((B,C,x.shape[-1]//200,200))
         
-        x = torch.cat([x, self.scale_param.repeat((x.shape[0], 1, x.shape[-1]))], dim=-2)
+        z = self.feature(x, input_chans=[i for i in range(C+1)])
         
-        h = self.model(x)
-        
-        h = h.flatten(1)
-        h = self.drop(h)
-        
-        pred = self.linear_probe(h)
-        return x, pred
+        return x, z
 
     def training_step(self, batch, batch_idx):
         # training_step defined the train loop.
@@ -120,13 +131,11 @@ class LitEEGPTCausal(pl.LightningModule):
         
         return loss
     
+    
     def configure_optimizers(self):
         
         optimizer = torch.optim.AdamW(
-            list([self.scale_param])+
-            list(self.downsample.parameters())+
-            list(self.model.parameters())+
-            list(self.linear_probe.parameters()),
+            list(self.feature.parameters()),
             weight_decay=0.01)#
         
         lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr=max_lr, steps_per_epoch=steps_per_epoch, epochs=max_epochs, pct_start=0.2)
@@ -155,9 +164,8 @@ set_all = set(subjects)
 for fold in range(10):
     set_valid = set(subjects[fold*N:(fold+1)*N])
     set_train = set_all - set_valid
-    
-    train_dataset = torchvision.datasets.DatasetFolder(root="../datasets/downstream/sleep_edf/TrainFold", loader=lambda x: torch.load(x),  extensions=[f'.s{i}' for i in set_train])
-    valid_dataset = torchvision.datasets.DatasetFolder(root="../datasets/downstream/sleep_edf/TrainFold", loader=lambda x: torch.load(x), extensions=[f'.s{i}' for i in set_valid])
+    train_dataset = torchvision.datasets.DatasetFolder(root="../datasets/sleep_edf/TrainFold", loader=lambda x: torch.load(x),  extensions=[f'.s{i}' for i in set_train])
+    valid_dataset = torchvision.datasets.DatasetFolder(root="../datasets/sleep_edf/TestingFold", loader=lambda x: torch.load(x), extensions=[f'.s{i}' for i in set_valid])
 
     # -- begin Training ------------------------------
 
@@ -168,14 +176,14 @@ for fold in range(10):
     global steps_per_epoch
     global max_lr
 
-    batch_size=8*256
+    batch_size=8*8
 
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, num_workers=8, shuffle=True)
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=batch_size, num_workers=8, shuffle=False)
 
-    max_epochs = 100
+    max_epochs = 40
     steps_per_epoch = math.ceil(len(train_loader))
-    max_lr = 1e-5
+    max_lr = 4e-4
 
     # init model
     model = LitEEGPTCausal()
@@ -188,7 +196,7 @@ for fold in range(10):
                         precision=16,
                         max_epochs=max_epochs, 
                         callbacks=callbacks,
-                        logger=[pl_loggers.TensorBoardLogger('./logs/', name="BENDR_SLEEPEDF_tb", version=f"fold{fold+1}"), 
-                                pl_loggers.CSVLogger('./logs/', name="BENDR_SLEEPEDF_csv")])
+                        logger=[pl_loggers.TensorBoardLogger('./logs/', name="LaBraM_SLEEPEDF_tb", version=f"fold{fold+1}"), 
+                                pl_loggers.CSVLogger('./logs/', name="LaBraM_SLEEPEDF_csv")])
 
     trainer.fit(model, train_loader, valid_loader, ckpt_path='last')

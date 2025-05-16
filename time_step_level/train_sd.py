@@ -77,7 +77,7 @@ def main():
         avg_sample_score = Result()
         avg_event_score = Result()
 
-        file_list, label_list = get_file('../data/v2.0.3/edf/dev')
+        file_list, label_list = get_file('./data/v2.0.3/edf/dev')
         progress = tqdm(range(len(file_list)))
         for i in progress:
             data_file, label_file = file_list[i], label_list[i]
@@ -141,13 +141,8 @@ def main():
 
         return avg_event_score.f1
     args = ParseArgs()
-    data = np.load(f'../data/dataset/full_train_data_{args.alpha}_{args.beta}_{args.window_size}.npy')
-    label = np.load(f'../data/dataset/full_train_label_{args.alpha}_{args.beta}_{args.window_size}.npy')
-    
-    # data = np.load('../main/seizure_detection/data/data_15360.npy')
-    # label = np.load('../main/seizure_detection/data/label_15360.npy', mmap_mode='r')
-    # val_data = np.load('../main/seizure_detection/data/val_data_15360.npy', mmap_mode='r')
-    # val_label = np.load('../main/seizure_detection/data/val_label_15360.npy', mmap_mode='r')
+    data = np.load(f'./data/dataset/full_train_data_{args.alpha}_{args.beta}_{args.window_size}.npy')
+    label = np.load(f'./data/dataset/full_train_label_{args.alpha}_{args.beta}_{args.window_size}.npy')
     
     print('data', data.shape)
     print('label', label.shape)

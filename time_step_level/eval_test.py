@@ -22,7 +22,7 @@ def eval_TestSet(args, device):
         avg_sample_score = Result()
         avg_event_score = Result()
 
-        file_list, label_list = get_file('../data/v2.0.3/edf/eval')
+        file_list, label_list = get_file('./data/v2.0.3/edf/eval')
         progress = tqdm(range(len(file_list)))
         for i in progress:
             data_file, label_file = file_list[i], label_list[i]
