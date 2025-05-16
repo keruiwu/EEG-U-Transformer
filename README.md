@@ -5,13 +5,6 @@ Our model propose a U-Net-based deep learning model for time-step level EEG anal
 
 Experiments demonstrate that our model achieves the **state-of-the-art performance** under various time-step and window-level classification tasks. The runtime analysis and cross-dataset evaluation further highlight the model's **efficiency, robustness, and generalization ability**.
 
-## Requirements
-
-To install requirements:
-
-```bash
-pip install -r requirements.txt
-```
 
 ## Three Different Tests
 
@@ -24,6 +17,14 @@ Starting from this point, the remainder of the document is divided into three ma
 <br><br><br><br>
 
 # Seizure Detection
+
+## Seizure Detection Requirements
+
+To install requirements:
+
+```bash
+pip install -r ./SeizureDetection/requirements.txt
+```
 
 ## Seizure Detection Datasets Download
 
@@ -64,6 +65,14 @@ Starting from this point, the remainder of the document is divided into three ma
 ---
 
 # Sleep Stage Classification
+
+## Sleep Stage Classification Requirements
+
+To install requirements:
+
+```bash
+pip install -r ./SleepStageClassification/requirements.txt
+```
 
 ## Sleep Stage Classification Datasets Download
 
