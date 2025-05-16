@@ -14,8 +14,7 @@ import torch
 import torch.nn as nn
 
 import math
-
-import torch
+from thop import profile
 
 from logging import getLogger
 
@@ -626,93 +625,14 @@ class EEGPTClassifier(nn.Module):
         
         self.use_chan_conv = use_chan_conv
         if use_chan_conv:
-     
-            #61
-            # self.chan_conv      = torch.nn.Sequential(
-            #     Conv2dWithConstraint(in_channels, img_size[0], 1),
-            #     # nn.Conv2d(in_channels, img_size[0], 1),
-            #     nn.BatchNorm2d(img_size[0]),
-            #     nn.GELU(),
-            #     # nn.Dropout(0.25),
-
-            #     # nn.Conv2d(img_size[0], img_size[0]*64, kernel_size=(1,50), stride= (1,50), groups=img_size[0]),
-            #     nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,55), groups=img_size[0],padding='same'),
-            #     # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
-            #     nn.BatchNorm2d(img_size[0]),
-            #     # nn.GELU(),
-            #     nn.Dropout(0.25),
-
-            #     # nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,5), groups=img_size[0],padding= 'same'),
-            #     # # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
-            #     # nn.BatchNorm2d(img_size[0]),
-            #     # nn.GELU(),
-            #     # nn.Dropout(0.25),
-            # )
-
-            #62
-            # self.chan_conv      = torch.nn.Sequential(
-            #     Conv2dWithConstraint(in_channels, img_size[0], 1),
-            #     # nn.Conv2d(in_channels, img_size[0], 1),
-            #     nn.BatchNorm2d(img_size[0]),
-            #     nn.GELU(),
-            #     # nn.Dropout(0.25),
-
-            #     # nn.Conv2d(img_size[0], img_size[0]*64, kernel_size=(1,50), stride= (1,50), groups=img_size[0]),
-            #     nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,55), groups=img_size[0],padding='same'),
-            #     # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
-            #     nn.BatchNorm2d(img_size[0]),
-            #     # nn.GELU(),
-            #     nn.Dropout(0.3),
-
-            #     # nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,5), groups=img_size[0],padding= 'same'),
-            #     # # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
-            #     # nn.BatchNorm2d(img_size[0]),
-            #     # nn.GELU(),
-            #     # nn.Dropout(0.25),
-            # )
-
-            #63
-            # self.chan_conv      = torch.nn.Sequential(
-            #     Conv2dWithConstraint(in_channels, img_size[0], 1),
-            #     # nn.Conv2d(in_channels, img_size[0], 1),
-            #     nn.BatchNorm2d(img_size[0]),
-            #     nn.GELU(),
-            #     # nn.Dropout(0.25),
-
-            #     # nn.Conv2d(img_size[0], img_size[0]*64, kernel_size=(1,50), stride= (1,50), groups=img_size[0]),
-            #     nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,55), groups=img_size[0],padding='same'),
-            #     # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
-            #     nn.BatchNorm2d(img_size[0]),
-            #     # nn.GELU(),
-            #     nn.Dropout(0.5),
-
-            #     # nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,5), groups=img_size[0],padding= 'same'),
-            #     # # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
-            #     # nn.BatchNorm2d(img_size[0]),
-            #     # nn.GELU(),
-            #     # nn.Dropout(0.25),
-            # )
-            #
 
             self.chan_conv      = torch.nn.Sequential(
                 Conv2dWithConstraint(in_channels, img_size[0], 1),
-                # nn.Conv2d(in_channels, img_size[0], 1),
                 nn.BatchNorm2d(img_size[0]),
                 nn.GELU(),
-                # nn.Dropout(0.25),
-
-                # nn.Conv2d(img_size[0], img_size[0]*64, kernel_size=(1,50), stride= (1,50), groups=img_size[0]),
                 nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,55), groups=img_size[0],padding='same'),
-                # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
                 nn.BatchNorm2d(img_size[0]),
-                # nn.GELU(),
                 nn.Dropout(0.8),
-
-                # nn.Conv2d(img_size[0], img_size[0], kernel_size=(1,5), groups=img_size[0],padding= 'same'),
-                # # Conv2dWithConstraint(img_size[0], img_size[0], kernel_size=(1,15), groups=img_size[0]),
-                # nn.BatchNorm2d(img_size[0]),
-                # nn.GELU(),
-                # nn.Dropout(0.25),
             )
 
 
@@ -758,17 +678,9 @@ class EEGPTClassifier(nn.Module):
         self.norm = nn.Identity() if use_mean_pooling else norm_layer(embed_dim)
         self.fc_norm = norm_layer(embed_dim) if use_mean_pooling else None
 
-
-        # self.head_0 = LinearWithConstraint(4*self.embed_dim, 16) if num_classes > 0 else nn.Identity()
-        # self.act = nn.ReLU()
         self.head = nn.Sequential(
-            # nn.Linear(4*self.embed_dim*31,256),
-            # nn.ReLU(),
             nn.Dropout(0.8),
-            # LinearWithConstraint(4*self.embed_dim*40, num_classes)
             LinearWithConstraint(30720, num_classes),
-            # nn.Dropout(0.25),
-            # nn.Linear(4*self.embed_dim*31, num_classes)
         )
     
     def get_num_layers(self):
@@ -795,34 +707,8 @@ class EEGPTClassifier(nn.Module):
         if self.use_chan_conv:
             x = x[:,:,None]
             x = self.chan_conv(x)[:,:,0]
-            # x = rearrange(x, 'a (b c) d e -> a b (d e c)',c = 64 )
-            # print(x.shape)
-            
-        # print(x.shape)
 
         x = self.target_encoder(x, chan_ids.to(x))
-
-
-        # print(x.shape)
-
-        # x = self.reconstructor(x)
-        # x = self.norm(x)
-
-        # if self.fc_norm is not None:
-        #     if return_all_tokens:
-        #         return self.fc_norm(x)
-        #     t = x[:, 1:, :]
-        #     if return_patch_tokens:
-        #         return self.fc_norm(t)
-        #     else:
-        #         return self.fc_norm(t.mean(1))
-        # else:
-        #     if return_all_tokens:
-        #         return x
-        #     elif return_patch_tokens:
-        #         return x[:, 1:]
-        #     else:
-        #         return x[:, 0]
         return x
         
     def forward(self, x, chan_ids=None, return_patch_tokens=False, return_all_tokens=False, **kwargs):
@@ -831,15 +717,8 @@ class EEGPTClassifier(nn.Module):
         For example, for an EEG sample of 4 seconds with 64 electrodes, x will be [batch size, 64, 4*256]
         '''
         if len(x.shape)==4: x = x.flatten(2)
-        # print('x', x.shape)
         
         x = self.forward_features(x, chan_ids=chan_ids, return_patch_tokens=return_patch_tokens, return_all_tokens=return_all_tokens, **kwargs)
-        # print(x.shape)
-
-        # x = x.flatten(2)
-        # x = x[:,:,0]
-        # x = self.act(self.head_0(x))
-
         
         x = x.flatten(1)
         x = self.head(x)
@@ -856,14 +735,6 @@ if __name__=="__main__":
         'P7', 'P3', 'PZ', 'P4', 'P8',
                 'O1', 'O2' ]
     
-    # use_channels_names =   ['FP1', 'FPZ', 'FP2',
-    #         'F7', 'F5', 'F3', 'F1', 'FZ', 'F2', 'F4', 'F6', 'F8', 
-    #      'FC5', 'FC3', 'FC1', 'FCZ', 'FC2', 'FC4', 'FC6',
-    #         'T7', 'C5', 'C3', 'C1', 'CZ', 'C2', 'C4', 'C6', 'T8', 
-    #          'P7', 'P5', 'P3', 'P1', 'PZ', 'P2', 'P4', 'P6', 'P8', 
-    #                   'PO3', 'POZ', 'PO4',
-    #                            'O1', 'OZ', 'O2', ]
-    
     ch_names = ['EEG FP1', 'EEG FP2-REF', 'EEG F3-REF', 'EEG F4-REF', 'EEG C3-REF', 'EEG C4-REF', 'EEG P3-REF', 'EEG P4-REF', 'EEG O1-REF', 'EEG O2-REF', 'EEG F7-REF', \
                     'EEG F8-REF', 'EEG T3-REF', 'EEG T4-REF', 'EEG T5-REF', 'EEG T6-REF', 'EEG A1-REF', 'EEG A2-REF', 'EEG FZ-REF', 'EEG CZ-REF', 'EEG PZ-REF', 'EEG T1-REF', 'EEG T2-REF']
     ch_names = [name.split(' ')[-1].split('-')[0] for name in ch_names]
@@ -875,45 +746,7 @@ if __name__=="__main__":
         z = model(x)
         print(z.shape)
 
-    from thop import profile
     flops, params = profile(model, inputs=(x,))
     print('flops: ', flops, 'params: ', params)
     print('FLOPs = ' + str(flops/1000**3) + 'G')
     print('Params = ' + str(params/1000**2) + 'M')
-
-    # target_encoder = EEGTransformer(
-    # img_size        =[len(use_channels_names), 1024],
-    # patch_size      =32*2,
-    # embed_num       =4,
-    # embed_dim       =512,
-    # depth           =8,
-    # num_heads       =8,
-    # mlp_ratio       =4.0,
-    # drop_rate       =0.0,
-    # attn_drop_rate  =0.0,
-    # drop_path_rate  =0.0,
-    # init_std        =0.02,
-    # qkv_bias        =True, 
-    # norm_layer      =partial(nn.LayerNorm, eps=1e-6))
-    
-    # reconstructor = EEGTransformerReconstructor(
-    # num_patches            =target_encoder.num_patches,
-    # patch_size             =32*2,
-    # embed_dim              =512,
-    # embed_num              =4,
-    # reconstructor_embed_dim=512,
-    # depth                  =8,
-    # num_heads              =8,
-    # mlp_ratio              =4.0,
-    # drop_rate              =0.0,
-    # attn_drop_rate         =0.0,
-    # drop_path_rate         =0.0,
-    # init_std               =0.02,
-    # qkv_bias               =True, 
-    # norm_layer             =partial(nn.LayerNorm, eps=1e-6))
-    
-    # x = torch.zeros((2,19,1024))
-    # chans_id = target_encoder.prepare_chan_ids(use_channels_names)
-    # with torch.no_grad():
-    #     z = target_encoder(x, chans_id.to(x))
-    #     r = reconstructor(z)

@@ -79,5 +79,5 @@ python3 st_train.py
 ### Abnormal Detection
 ```bash
 cd ./window_level/abnormal
-python3 st_train.py
+./st_tuab.sh
 ```

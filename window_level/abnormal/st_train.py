@@ -182,30 +182,6 @@ def get_args():
     return parser.parse_args(), ds_init
 
 def get_models(args):
-    # CHANNEL_DICT = {k.upper():v for v,k in enumerate(
-    #                  [      'FP1', 'FPZ', 'FP2', 
-    #                     "AF7", 'AF3', 'AF4', "AF8", 
-    #         'F7', 'F5', 'F3', 'F1', 'FZ', 'F2', 'F4', 'F6', 'F8', 
-    #     'FT7', 'FC5', 'FC3', 'FC1', 'FCZ', 'FC2', 'FC4', 'FC6', 'FT8', 
-    #         'T7', 'C5', 'C3', 'C1', 'CZ', 'C2', 'C4', 'C6', 'T8', 
-    #     'TP7', 'CP5', 'CP3', 'CP1', 'CPZ', 'CP2', 'CP4', 'CP6', 'TP8',
-    #          'P7', 'P5', 'P3', 'P1', 'PZ', 'P2', 'P4', 'P6', 'P8', 
-    #                   'PO7', "PO5", 'PO3', 'POZ', 'PO4', "PO6", 'PO8', 
-    #                            'O1', 'OZ', 'O2', ])}
-
-    # use_channels_names =   ['FP1', 'FPZ', 'FP2',
-    #         'F7', 'F5', 'F3', 'F1', 'FZ', 'F2', 'F4', 'F6', 'F8', 
-    #         'T7', 'C5', 'C3', 'C1', 'CZ', 'C2', 'C4', 'C6', 'T8', 
-    #                   'PO3', 'POZ', 'PO4',
-    #                   'O1', 'O2']
-
-    use_channels_names = [      
-             'FP1','FPZ', 'FP2',
-        'F7', 'F3', 'FZ', 'F4', 'F8',
-        'T7', 'C3', 'CZ', 'C4', 'T8',
-        'P7', 'P3', 'PZ', 'P4', 'P8',
-                'O1', 'O2' ]
-    
     ch_names = ['EEG FP1', 'EEG FP2-REF', 'EEG F3-REF', 'EEG F4-REF', 'EEG C3-REF', 'EEG C4-REF', 'EEG P3-REF', 'EEG P4-REF', 'EEG O1-REF', 'EEG O2-REF', 'EEG F7-REF', \
                     'EEG F8-REF', 'EEG T3-REF', 'EEG T4-REF', 'EEG T5-REF', 'EEG T6-REF', 'EEG A1-REF', 'EEG A2-REF', 'EEG FZ-REF', 'EEG CZ-REF', 'EEG PZ-REF', 'EEG T1-REF', 'EEG T2-REF']
     ch_names = [name.split(' ')[-1].split('-')[0] for name in ch_names]
@@ -215,16 +191,6 @@ def get_models(args):
         num_classes=1,
         num_layers=10
     )
-    
-    # model = create_model(
-    #     args.model,
-    #     drop_rate=args.drop,
-    #     drop_path_rate=args.drop_path,
-    #     attn_drop_rate=args.attn_drop_rate,
-    #     use_mean_pooling=args.use_mean_pooling,
-    #     qkv_bias=args.qkv_bias,
-    # )
-
     return model
 
 
@@ -236,6 +202,8 @@ def get_dataset(args):
         ch_names = [name.split(' ')[-1].split('-')[0] for name in ch_names]
         args.nb_classes = 1
         metrics = ["pr_auc", "roc_auc", "accuracy", "balanced_accuracy"]
+    else:
+        raise ValueError("Unknown dataset: %s" % args.dataset)
     return train_dataset, test_dataset, val_dataset, ch_names, metrics
 
 
@@ -265,41 +233,10 @@ def main(args, ds_init):
     if args.disable_eval_during_finetuning:
         dataset_val = None
         dataset_test = None
-
-    # if True:  # args.distributed:
-    #     num_tasks = utils.get_world_size()
-    #     global_rank = utils.get_rank()
-    #     sampler_train = torch.utils.data.DistributedSampler(
-    #         dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-    #     )
-    #     print("Sampler_train = %s" % str(sampler_train))
-    #     if args.dist_eval:
-    #         if len(dataset_val) % num_tasks != 0:
-    #             print('Warning: Enabling distributed evaluation with an eval dataset not divisible by process number. '
-    #                   'This will slightly alter validation results as extra duplicate entries are added to achieve '
-    #                   'equal num of samples per-process.')
-    #         sampler_val = torch.utils.data.DistributedSampler(
-    #             dataset_val, num_replicas=num_tasks, rank=global_rank, shuffle=False)
-    #         if type(dataset_test) == list:
-    #             sampler_test = [torch.utils.data.DistributedSampler(
-    #                 dataset, num_replicas=num_tasks, rank=global_rank, shuffle=False) for dataset in dataset_test]
-    #         else:
-    #             sampler_test = torch.utils.data.DistributedSampler(
-    #                 dataset_test, num_replicas=num_tasks, rank=global_rank, shuffle=False)
-    #     else:
-    #         sampler_val = torch.utils.data.SequentialSampler(dataset_val)
-    #         sampler_test = torch.utils.data.SequentialSampler(dataset_test)
-    # else:
-
     sampler_train = torch.utils.data.RandomSampler(dataset_train)
     sampler_val = torch.utils.data.SequentialSampler(dataset_val)
     sampler_test = torch.utils.data.SequentialSampler(dataset_test)
 
-    # if global_rank == 0 and args.log_dir is not None:
-    #     os.makedirs(args.log_dir, exist_ok=True)
-    #     log_writer = utils.TensorboardLogger(log_dir=args.log_dir)
-    # else:
-    
     log_writer = None
 
     data_loader_train = torch.utils.data.DataLoader(
@@ -340,46 +277,11 @@ def main(args, ds_init):
 
     model = get_models(args)
 
-    patch_size = 200#model.patch_size
+    patch_size = 200 # model.patch_size
     print("Patch size = %s" % str(patch_size))
     args.window_size = (1, args.input_size // patch_size)
     args.patch_size = patch_size
 
-    # if args.finetune:
-    #     if args.finetune.startswith('https'):
-    #         checkpoint = torch.hub.load_state_dict_from_url(
-    #             args.finetune, map_location='cpu', check_hash=True)
-    #     else:
-    #         checkpoint = torch.load(args.finetune, map_location='cpu')
-
-    #     print("Load ckpt from %s" % args.finetune)
-    #     # checkpoint_model = None
-    #     # for model_key in args.model_key.split('|'):
-    #     #     if model_key in checkpoint:
-    #     #         checkpoint_model = checkpoint[model_key]
-    #     #         print("Load state_dict by model_key = %s" % model_key)
-    #     #         break
-    #     # if checkpoint_model is None:
-    #     #     checkpoint_model = checkpoint
-    #     # if (checkpoint_model is not None) and (args.model_filter_name != ''):
-    #     #     all_keys = list(checkpoint_model.keys())
-    #     #     new_dict = OrderedDict()
-    #     #     for key in all_keys:
-    #     #         if key.startswith('student.'):
-    #     #             new_dict[key[8:]] = checkpoint_model[key]
-    #     #         else:
-    #     #             pass
-    #     #     checkpoint_model = new_dict
-
-    #     # state_dict = model.state_dict()
-    #     # for k in ['head.weight', 'head.bias']:
-    #     #     if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
-    #     #         print(f"Removing key {k} from pretrained checkpoint")
-    #     #         del checkpoint_model[k]
-
-    #     # all_keys = list(checkpoint_model.keys())
-    #     checkpoint_model = checkpoint['state_dict']
-    #     utils.load_state_dict(model, checkpoint_model, prefix=args.model_prefix)
 
     model.to(device)
 
@@ -407,37 +309,9 @@ def main(args, ds_init):
     print("Number of training examples = %d" % len(dataset_train))
     print("Number of training training per epoch = %d" % num_training_steps_per_epoch)
 
-    # num_layers = model_without_ddp.get_num_layers()
-    # if args.layer_decay < 1.0:
-    #     assigner = LayerDecayValueAssigner(list(args.layer_decay ** (num_layers + 1 - i) for i in range(num_layers + 2)))
-    # else:
     assigner = None
 
-    # if assigner is not None:
-    #     print("Assigned values = %s" % str(assigner.values))
-
-    # skip_weight_decay_list = model.no_weight_decay()
     skip_weight_decay_list = set()
-    # if args.disable_weight_decay_on_rel_pos_bias:
-    #     for i in range(num_layers):
-    #         skip_weight_decay_list.add("blocks.%d.attn.relative_position_bias_table" % i)
-
-    # if args.enable_deepspeed:
-    #     loss_scaler = None
-    #     optimizer_params = get_parameter_groups(
-    #         model, args.weight_decay, skip_weight_decay_list,
-    #         assigner.get_layer_id if assigner is not None else None,
-    #         assigner.get_scale if assigner is not None else None)
-    #     model, optimizer, _, _ = ds_init(
-    #         args=args, model=model, model_parameters=optimizer_params, dist_init_required=not args.distributed,
-    #     )
-
-    #     print("model.gradient_accumulation_steps() = %d" % model.gradient_accumulation_steps())
-    #     assert model.gradient_accumulation_steps() == args.update_freq
-    # else:
-    #     if args.distributed:
-    #         model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
-    #         model_without_ddp = model.module
 
     optimizer = create_optimizer(
         args, model_without_ddp, skip_list=skip_weight_decay_list,
@@ -465,9 +339,6 @@ def main(args, ds_init):
 
     print("criterion = %s" % str(criterion))
 
-    # utils.auto_load_model(
-    #     args=args, model=model, model_without_ddp=model_without_ddp,
-    #     optimizer=optimizer, loss_scaler=loss_scaler, model_ema=model_ema)
             
     if args.eval:
         balanced_accuracy = []
@@ -514,7 +385,6 @@ def main(args, ds_init):
             for key, value in test_stats.items():
                 print(f"{key}: {value}")
             print('=' * 30)
-            # print(f"Accuracy of the network on the {len(dataset_test)} test EEG: {test_stats['accuracy']:.2f}%")
             
             if max_accuracy < val_stats["accuracy"]:
                 max_accuracy = val_stats["accuracy"]

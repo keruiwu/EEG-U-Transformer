@@ -181,14 +181,7 @@ def evaluate(data_loader, model, device, header='Test:', ch_names=None, metrics=
         
         # compute output
         with torch.cuda.amp.autocast():
-
-            # print('EEG', EEG.shape)
-
             output = model(EEG)
-
-            # print('output', output.shape)
-            # print('target', target.shape)
-
             loss = criterion(output, target)
         
         if is_binary:
@@ -197,9 +190,6 @@ def evaluate(data_loader, model, device, header='Test:', ch_names=None, metrics=
             output = output.cpu()
         target = target.cpu()
 
-        # for sample in range(output.shape[0]):
-        #     print('target', target[sample])
-        #     print('output', output[sample])
 
         results = utils.get_metrics(output.numpy(), target.numpy(), metrics, is_binary)
         pred.append(output)
@@ -209,7 +199,6 @@ def evaluate(data_loader, model, device, header='Test:', ch_names=None, metrics=
         metric_logger.update(loss=loss.item())
         for key, value in results.items():
             metric_logger.meters[key].update(value, n=batch_size)
-        #metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print('* loss {losses.global_avg:.3f}'

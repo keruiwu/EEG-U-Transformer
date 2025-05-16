@@ -3,13 +3,12 @@ import os
 import torch
 from torch import nn
 import pytorch_lightning as pl
+import math
 
 import torchvision
-from functools import partial
 import numpy as np
 import random
 import os 
-import tqdm
 from pytorch_lightning import loggers as pl_loggers
 import torch.nn.functional as F
 def seed_torch(seed=1029):
@@ -149,8 +148,6 @@ for fold in range(5):
 
     # -- begin Training ------------------------------
 
-    import math
-    # torch.set_float32_matmul_precision('medium' )
 
     global max_epochs
     global steps_per_epoch
