@@ -8,7 +8,6 @@ from tqdm import tqdm
 import os
 
 from timescoring import scoring
-from epilepsy2bids.annotations import Annotations
 from timescoring.annotations import Annotation
 from service.handle_data import *
 from service.post_process import *
@@ -113,10 +112,7 @@ def main():
             binary_output = morphological_filter_1d(binary_output, operation="opening", kernel_size=5)
             binary_output = morphological_filter_1d(binary_output, operation="closing", kernel_size=5)
             binary_output = remove_short_events(binary_output, min_length=2.0, fs=256)
-            # hyp = Annotations.loadMask(binary_output, 256)
             hyp = Annotation(binary_output, 256)
-            # print('ref', ref.shape)
-            # ref = Annotations.loadMask(ref.detach().numpy(), 256)
             ref = Annotation(ref.detach().numpy(), 256)
 
             sample_score = scoring.SampleScoring(ref, hyp)
