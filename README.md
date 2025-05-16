@@ -5,21 +5,26 @@ Our model propose a U-Net-based deep learning model for time-step level EEG anal
 
 Experiments demonstrate that our model achieves the **state-of-the-art performance** under various time-step and window-level classification tasks. The runtime analysis and cross-dataset evaluation further highlight the model's **efficiency, robustness, and generalization ability**.
 
-## Requirements
-
-To install requirements:
-
-```bash
-pip install -r requirements.txt
-```
 
 ## Three Different Tests
 
 Starting from this point, the remainder of the document is divided into three main sections, each focusing on a specific task:
 
-- [Seizure Detection](#seizure-detection-datasets-download)  
-- [Sleep Stage Classification](#sleep-stage-classification-datasets-download)  
-- [Pathological (Abnormal) Detection](#pathologicalabnormal-detection-datasets-download)
+- [Seizure Detection](#seizure-detection)  
+- [Sleep Stage Classification](#sleep-stage-classification)  
+- [Pathological (Abnormal) Detection](#pathologicalabnormal-detection)
+
+<br><br><br><br>
+
+# Seizure Detection
+
+## Seizure Detection Requirements
+
+To install requirements:
+
+```bash
+pip install -r ./SeizureDetection/requirements.txt
+```
 
 ## Seizure Detection Datasets Download
 
@@ -59,6 +64,16 @@ Starting from this point, the remainder of the document is divided into three ma
 
 ---
 
+# Sleep Stage Classification
+
+## Sleep Stage Classification Requirements
+
+To install requirements:
+
+```bash
+pip install -r ./SleepStageClassification/requirements.txt
+```
+
 ## Sleep Stage Classification Datasets Download
 
 ### Sleep-EDFx
@@ -69,6 +84,14 @@ Starting from this point, the remainder of the document is divided into three ma
   *Bob Kemp, Aeilko H Zwinderman, Bert Tuk, Hilbert AC Kamphuisen, and Josefien JL Oberye. Analysis of a sleep-dependent neuronal feedback loop: the slow-wave microcontinuity of the eeg. IEEE Transactions on Biomedical Engineering, 47(9):1185–1194, 2000.*
 
 
+# Pathological(abnormal) Detection
+## Pathological Detection Requirements
+
+To install requirements:
+
+```bash
+pip install -r ./PathologicalDetection/requirements.txt
+```
 ## Pathological(abnormal) Detection Datasets Download
 
 ### TUH Abnormal EEG Corpus v3.0.1
