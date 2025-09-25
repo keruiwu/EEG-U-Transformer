@@ -1,5 +1,5 @@
-# Scaling U-Net with Transformer for Simultaneous Time-Step Level Detection from Long EEG Recordings
-This repository is the official implementation of "Scaling U-Net with Transformer for Simultaneous Time-Step Level Detection from Long EEG Recordings".
+# Large EEG-U-Transformer for Time-Step Level Detection Without Pre-Training
+This repository is the official implementation of "Large EEG-U-Transformer for Time-Step Level Detection Without Pre-Training".
 
 ![image](figures/SeizureTransformer.png)
 
